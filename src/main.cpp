@@ -2,12 +2,12 @@
 #include "Arduino.h"
 
 const int ledPins[4] = {2,3,4,5}; // broche pour les LEDs, rouge vert bleu jaune
-const int buttonPins[5] = {6,7,8,9}; // broche pour les boutons, rouge vert bleu jaune
+const int buttonPins[4] = {6,7,8,9}; // broche pour les boutons, rouge vert bleu jaune
 const int startButtonPin = 10; // Bouton de démarrage/action
 const int segmentPins[7] = {A3,A2,12,A1,A0,A4,A5}; // Segments A à G
 const int buzzerPin = 11;
 int Tabrep[16];                            // Séquence maximale (16 étapes)
-int currentLevel = 0;                        // Niveau actuel
+int currentLevel = 0;                      // Niveau actuel
 int gameState = 0;               // 0=attente, 1=sequence, 2=reponse, 3=gameover
 unsigned long lastDebounceTime = 0;
 const int debounceDelay = 50;
@@ -31,6 +31,7 @@ void setup() {
   pinMode(buttonPins[2], INPUT);
   pinMode(buttonPins[3], INPUT);
   pinMode(startButtonPin, INPUT);
+  pinMode(buzzerPin, OUTPUT);
 }
 
 void loop() {
@@ -39,6 +40,17 @@ void loop() {
       if (checkButtonPress(startButtonPin)) {
         startGame();
         gameState = 1;
+      } else {
+        for (int i = 0; i < 3; i++) {
+          for (int j = 0; j < 4; j++) {
+            digitalWrite(ledPins[j], HIGH);
+          }
+          delay(300);
+          for (int j = 0; j < 4; j++) {
+          digitalWrite(ledPins[j], LOW);
+          }
+          delay(300);
+        }
       }
       break;
       
@@ -50,8 +62,9 @@ void loop() {
     case 2: // Attend la réponse du joueur
       if (checkPlayerInput()) {
         currentLevel++;
-        if (currentLevel > 15) {
-          victoryAnimation(); // fonction de Léo à rajouter
+        if (currentLevel > 4) {
+          score(currentLevel);
+          darude_sandstorm(); // fonction de Léo à rajouter
           gameState = 0;
         } else {
           score(currentLevel);
@@ -59,7 +72,7 @@ void loop() {
           gameState = 1;
         }
       } else {
-        gameOver();
+        GameOver();
         gameState = 3;
       }
       break;
@@ -67,6 +80,7 @@ void loop() {
     case 3: // Game Over - attend redémarrage
       if (checkButtonPress(startButtonPin)) {
         gameState = 0;
+        
         showStartScreen();
       }
       break;
@@ -74,10 +88,8 @@ void loop() {
 }
 
 void startGame() {
-  currentLevel = 1;
+  currentLevel = 0;
   score(currentLevel);
-  // Génère une nouvelle séquence aléatoire
-  //Met le code pour crée Tabrep aleatoirement
   for (int i = 0; i<16; i++){
     Tabrep[i]=random(0,4);
     Serial.print(Tabrep[i]);
@@ -122,6 +134,7 @@ void showStartScreen() {
 void play_sequence(){
   for (int i = 0;i<=currentLevel;i++){
     digitalWrite(ledPins[Tabrep[i]], HIGH);
+    son(Tabrep[i]);
     delay(500);
     digitalWrite(ledPins[Tabrep[i]], LOW);
     delay(200);
@@ -133,13 +146,14 @@ bool checkPlayerInput() {
   int buttonPressed;  //stocke quel bouton a été pressé
   int currentStep = 0; //suit la position dans la séquence à reproduire
   
-  while(currentStep < currentLevel) {
+  while(currentStep <= currentLevel) {
     // Vérification des boutons
     for(int i=0; i<4; i++) {
       if(digitalRead(buttonPins[i]) == HIGH) {
         // Un bouton a été pressé
         buttonPressed = i;    // Enregistre quel bouton est préessé
         digitalWrite(ledPins[i], HIGH); // Allume la LED comrespondandte
+        son(i);
         delay(200);
         digitalWrite(ledPins[i], LOW);  // Eteint la LED
         while (digitalRead(buttonPins[i]) == HIGH); // Attend relâchement
@@ -161,24 +175,35 @@ bool checkPlayerInput() {
 void son(int num) {
   switch(num){
     case 0:
-    num = 523;
+    num = 500;
     break;
     case 1:
-    num = 587;
+    num = 600;
     break;
     case 2:
-    num = 659;
+    num = 700;
     break;
     case 3:
-    num = 698;
+    num = 800;
     break;
   }
-  tone(buzzerPin,num,1);
-  delay(10000);
+  tone(buzzerPin,num,100);
+  delay(10);
+  noTone(11);
 }
 
 void score(int n){
   switch(n){
+    case 0:
+    digitalWrite(segmentPins[0],HIGH);
+    digitalWrite(segmentPins[1],HIGH);
+    digitalWrite(segmentPins[2],HIGH);
+    digitalWrite(segmentPins[3],HIGH);
+    digitalWrite(segmentPins[4],HIGH);
+    digitalWrite(segmentPins[5],HIGH);
+    digitalWrite(segmentPins[6],LOW);
+    break;
+
     case 1:
     digitalWrite(segmentPins[0],LOW);
     digitalWrite(segmentPins[1],HIGH);
@@ -545,4 +570,37 @@ void darude_sandstorm(){
   delay(longTone);
   noTone(11);
   delay(standardDelay);
+}
+
+void GameOver(){
+  int NOTE_SUSTAIN = 40;
+  for(uint8_t nLoop = 0;nLoop < 2;nLoop ++)
+         {
+           tone(11,NOTE_A5,100);
+           delay(NOTE_SUSTAIN);
+           tone(11,NOTE_B5,100);
+           delay(NOTE_SUSTAIN);
+           tone(11,NOTE_C5,100);
+           delay(NOTE_SUSTAIN);
+           tone(11,NOTE_B5,100);
+           delay(NOTE_SUSTAIN);
+           tone(11,NOTE_C5,100);
+           delay(NOTE_SUSTAIN);
+           tone(11,NOTE_D5,100);
+           delay(NOTE_SUSTAIN);
+           tone(11,NOTE_C5,100);
+           delay(NOTE_SUSTAIN);
+           tone(11,NOTE_D5,100);
+           delay(NOTE_SUSTAIN);
+           tone(11,NOTE_E5,100);
+           delay(NOTE_SUSTAIN);
+           tone(11,NOTE_D5,100);
+           delay(NOTE_SUSTAIN);
+           tone(11,NOTE_E5,100);
+           delay(NOTE_SUSTAIN);
+           tone(11,NOTE_E5,100);
+           delay(NOTE_SUSTAIN);
+         }
+
+
 }
