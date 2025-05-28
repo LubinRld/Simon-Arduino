@@ -5,6 +5,7 @@ const int ledPins[4] = {2,3,4,5}; // broche pour les LEDs, rouge vert bleu jaune
 const int buttonPins[5] = {6,7,8,9}; // broche pour les boutons, rouge vert bleu jaune
 const int startButtonPin = 10; // Bouton de démarrage/action
 const int segmentPins[7] = {A3,A2,12,A1,A0,A4,A5}; // Segments A à G
+const int buzzerPin = 11;
 int Tabrep[16];                            // Séquence maximale (16 étapes)
 int currentLevel = 0;                        // Niveau actuel
 int gameState = 0;               // 0=attente, 1=sequence, 2=reponse, 3=gameover
@@ -13,22 +14,23 @@ const int debounceDelay = 50;
 bool sequence_joue = false;
 
 void setup() {
-pinMode(segmentPins[0],OUTPUT);
-pinMode(segmentPins[1], OUTPUT);
-pinMode(segmentPins[2], OUTPUT);
-pinMode(segmentPins[3], OUTPUT);
-pinMode(segmentPins[4], OUTPUT);
-pinMode(segmentPins[5], OUTPUT);
-pinMode(segmentPins[6], OUTPUT);
-pinMode(ledPins[0], OUTPUT);
-pinMode(ledPins[1], OUTPUT);
-pinMode(ledPins[2], OUTPUT);
-pinMode(ledPins[3], OUTPUT);
-pinMode(buttonPins[0], INPUT);
-pinMode(buttonPins[1], INPUT);
-pinMode(buttonPins[2], INPUT);
-pinMode(buttonPins[3], INPUT);
-pinMode(startButtonPin, INPUT);
+  Serial.begin(9600);
+  pinMode(segmentPins[0],OUTPUT);
+  pinMode(segmentPins[1], OUTPUT);
+  pinMode(segmentPins[2], OUTPUT);
+  pinMode(segmentPins[3], OUTPUT);
+  pinMode(segmentPins[4], OUTPUT);
+  pinMode(segmentPins[5], OUTPUT);
+  pinMode(segmentPins[6], OUTPUT);
+  pinMode(ledPins[0], OUTPUT);
+  pinMode(ledPins[1], OUTPUT);
+  pinMode(ledPins[2], OUTPUT);
+  pinMode(ledPins[3], OUTPUT);
+  pinMode(buttonPins[0], INPUT);
+  pinMode(buttonPins[1], INPUT);
+  pinMode(buttonPins[2], INPUT);
+  pinMode(buttonPins[3], INPUT);
+  pinMode(startButtonPin, INPUT);
 }
 
 void loop() {
@@ -41,7 +43,7 @@ void loop() {
       break;
       
     case 1: // Joue la séquence
-      playSequence();
+      play_sequence();
       gameState = 2;
       break;
 
@@ -141,7 +143,7 @@ bool checkPlayerInput() {
         delay(200);
         digitalWrite(ledPins[i], LOW);  // Eteint la LED
         while (digitalRead(buttonPins[i]) == HIGH); // Attend relâchement
-        if (buttonPressed != sequence[currentStep]) {
+        if (buttonPressed != Tabrep[currentStep]) {
           return false; // Mauvaise réponse
         }
         currentStep++; // Bonne réponse, passe à l'étape suivante
@@ -154,6 +156,25 @@ bool checkPlayerInput() {
     delay(10);
   }
   return true;
+}
+
+void son(int num) {
+  switch(num){
+    case 0:
+    num = 523;
+    break;
+    case 1:
+    num = 587;
+    break;
+    case 2:
+    num = 659;
+    break;
+    case 3:
+    num = 698;
+    break;
+  }
+  tone(buzzerPin,num,1);
+  delay(10000);
 }
 
 void score(int n){
@@ -294,5 +315,234 @@ void score(int n){
     digitalWrite(segmentPins[6],HIGH);
     break;
   }
+}
 
+void darude_sandstorm(){
+  int shortTone = 80;
+  int longTone = 200;
+  int standardDelay = 50;
+  int delayBetweenBars = 50;
+
+  tone(11,  NOTE_B3, shortTone);
+  delay(shortTone);
+  noTone(11);
+  delay(standardDelay);
+  tone(11,  NOTE_B3, shortTone);
+  delay(shortTone);
+  noTone(11);
+  delay(standardDelay);
+  tone(11,  NOTE_B3, shortTone);
+  delay(shortTone);
+  noTone(11);
+  delay(standardDelay);
+  tone(11,  NOTE_B3, shortTone);
+  delay(shortTone);
+  noTone(11);
+  delay(standardDelay);
+  tone(11,  NOTE_B3, longTone); 
+  delay(longTone);
+  noTone(11);
+  delay(delayBetweenBars);
+  
+  tone(11,  NOTE_B3, shortTone);
+  delay(shortTone);
+  noTone(11);
+  delay(standardDelay); 
+  tone(11,NOTE_B3, shortTone);
+  delay(shortTone);
+  noTone(11);
+  delay(standardDelay);
+  tone(11,  NOTE_B3, shortTone);
+  delay(shortTone);
+  noTone(11);
+  delay(standardDelay);
+  tone(11,  NOTE_B3, shortTone);
+  delay(shortTone);
+  noTone(11);
+  delay(standardDelay);
+  tone(11,  NOTE_B3, shortTone);
+  delay(shortTone);
+  noTone(11);
+  delay(standardDelay);
+  tone(11,  NOTE_B3, shortTone);
+  delay(shortTone);
+  noTone(11);
+  delay(standardDelay);
+  tone(11,  NOTE_B3, longTone); 
+  delay(longTone);
+  noTone(11);
+  delay(standardDelay);
+ 
+  tone(11,  NOTE_E4, shortTone);
+  delay(shortTone);
+  noTone(11);
+  delay(standardDelay); 
+  tone(11,NOTE_E4, shortTone);
+  delay(shortTone);
+  noTone(11);
+  delay(standardDelay);
+  tone(11,  NOTE_E4, shortTone);
+  delay(shortTone);
+  noTone(11);
+  delay(standardDelay);
+  tone(11,  NOTE_E4, shortTone);
+  delay(shortTone);
+  noTone(11);
+  delay(standardDelay);
+  tone(11,  NOTE_E4, shortTone);
+  delay(shortTone);
+  noTone(11);
+  delay(standardDelay);
+  tone(11,  NOTE_E4, shortTone);
+  delay(shortTone);
+  noTone(11);
+  delay(standardDelay);
+  tone(11,  NOTE_E4, longTone); 
+  delay(longTone);
+  noTone(11);
+  delay(standardDelay);
+ 
+ 
+  tone(11,  NOTE_D4, shortTone);
+  delay(shortTone);
+  noTone(11);
+  delay(standardDelay); 
+  tone(11,NOTE_D4, shortTone);
+  delay(shortTone);
+  noTone(11);
+  delay(standardDelay);
+  tone(11,  NOTE_D4, shortTone);
+  delay(shortTone);
+  noTone(11);
+  delay(standardDelay);
+  tone(11,  NOTE_D4, shortTone);
+  noTone(11);
+  delay(standardDelay);
+  tone(11,  NOTE_D4, shortTone);
+  delay(shortTone);
+  noTone(11);
+  delay(standardDelay);
+  tone(11,  NOTE_D4, shortTone);
+  delay(shortTone);
+  noTone(11);
+  delay(standardDelay);
+  tone(11,  NOTE_D4, longTone); 
+  delay(longTone);
+  noTone(11);
+  delay(standardDelay);
+ 
+  tone(11, NOTE_A3, longTone);
+  delay(longTone);
+  noTone(11);
+  delay(standardDelay);
+ 
+  tone(11,  NOTE_B3, shortTone);
+  delay(shortTone);
+  noTone(11);
+  delay(standardDelay);
+  tone(11,  NOTE_B3, shortTone);
+  delay(shortTone);
+  noTone(11);
+  delay(standardDelay);
+  tone(11,  NOTE_B3, shortTone);
+  delay(shortTone);
+  noTone(11);
+  delay(standardDelay);
+  tone(11,  NOTE_B3, shortTone);
+  delay(shortTone);
+  noTone(11);
+  delay(standardDelay);
+  tone(11,  NOTE_B3, longTone); 
+  delay(longTone);
+  noTone(11);
+  delay(delayBetweenBars);
+ 
+  tone(11,  NOTE_B3, shortTone);
+  delay(shortTone);
+  noTone(11);
+  delay(standardDelay); 
+  tone(11,NOTE_B3, shortTone);
+  delay(shortTone);
+  noTone(11);
+  delay(standardDelay);
+  tone(11,  NOTE_B3, shortTone);
+  delay(shortTone);
+  noTone(11);
+  delay(standardDelay);
+  tone(11,  NOTE_B3, shortTone);
+  delay(shortTone);
+  noTone(11);
+  delay(standardDelay);
+  tone(11,  NOTE_B3, shortTone);
+  delay(shortTone);
+  noTone(11);
+  delay(standardDelay);
+  tone(11,  NOTE_B3, shortTone);
+  delay(shortTone);
+  noTone(11);
+  delay(standardDelay);
+  tone(11,  NOTE_B3, longTone); 
+  delay(longTone);
+  noTone(11);
+  delay(standardDelay);
+ 
+  tone(11, NOTE_E4, longTone);
+  delay(longTone);
+  noTone(11);
+  delay(standardDelay);
+ 
+  tone(11,  NOTE_B3, shortTone);
+  delay(shortTone);
+  noTone(11);
+  delay(standardDelay);
+  tone(11,  NOTE_B3, shortTone);
+  delay(shortTone);
+  noTone(11);
+  delay(standardDelay);
+  tone(11,  NOTE_B3, shortTone);
+  delay(shortTone);
+  noTone(11);
+  delay(standardDelay);
+  tone(11,  NOTE_B3, shortTone);
+  delay(shortTone);
+  noTone(11);
+  delay(standardDelay);
+  tone(11,  NOTE_B3, longTone); 
+  delay(longTone);
+  noTone(11);
+  delay(delayBetweenBars);
+ 
+  tone(11,  NOTE_B3, shortTone);
+  delay(shortTone);
+  noTone(11);
+  delay(standardDelay); 
+  tone(11,NOTE_B3, shortTone);
+  delay(shortTone);
+  noTone(11);
+  delay(standardDelay);
+  tone(11,  NOTE_B3, shortTone);
+  delay(shortTone);
+  noTone(11);
+  delay(standardDelay);
+  tone(11,  NOTE_B3, shortTone);
+  delay(shortTone);
+  noTone(11);
+  delay(standardDelay);
+  tone(11,  NOTE_B3, shortTone);
+  delay(shortTone);
+  noTone(11);
+  delay(standardDelay);
+  tone(11,  NOTE_B3, shortTone);
+  delay(shortTone);
+  noTone(11);
+  delay(standardDelay);
+  tone(11,  NOTE_B3, longTone); 
+  delay(longTone);
+  noTone(11);
+  delay(standardDelay);
+ 
+  tone(11, NOTE_E4, longTone); 
+  delay(longTone);
+  noTone(11);
+  delay(standardDelay);
 }
