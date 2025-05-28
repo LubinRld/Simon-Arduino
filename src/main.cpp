@@ -1,3 +1,4 @@
+#include "pitches.h"
 #include "Arduino.h"
 
 const int ledPins[4] = {2,3,4,5}; // broche pour les LEDs, rouge vert bleu jaune
@@ -9,6 +10,7 @@ int currentLevel = 0;                        // Niveau actuel
 int gameState = 0;               // 0=attente, 1=sequence, 2=reponse, 3=gameover
 unsigned long lastDebounceTime = 0;
 const int debounceDelay = 50;
+bool sequence_joue = false;
 
 void setup() {
 pinMode(segmentPins[0],OUTPUT);
@@ -66,6 +68,7 @@ void loop() {
         showStartScreen();
       }
       break;
+  }
 }
 
 void startGame() {
@@ -73,6 +76,10 @@ void startGame() {
   score(currentLevel);
   // Génère une nouvelle séquence aléatoire
   //Met le code pour crée Tabrep aleatoirement
+  for (int i = 0; i<16; i++){
+    Tabrep[i]=random(0,4);
+    Serial.print(Tabrep[i]);
+    Serial.write('\n');
   }
 }
 
@@ -108,6 +115,16 @@ void showStartScreen() {
     }
     delay(300);
   }
+}
+
+void play_sequence(){
+  for (int i = 0;i<=currentLevel;i++){
+    digitalWrite(ledPins[Tabrep[i]], HIGH);
+    delay(500);
+    digitalWrite(ledPins[Tabrep[i]], LOW);
+    delay(200);
+  }
+  sequence_joue = true;
 }
 
 bool checkPlayerInput() {
